@@ -63,7 +63,11 @@ Local SSH signature verification was configured using:
 
     git config --global gpg.ssh.allowedSignersFile ~/.config/git/allowed_signers
 
-The final commit signature will be verified after committing this submission file.
+The final commit was verified locally with:
+
+    git log --show-signature -1
+
+The output showed a good SSH signature for tivdzualubem@gmail.com.
 
 ### Why signed commits matter
 
@@ -71,7 +75,7 @@ Signed commits matter because Git names and emails can be impersonated, but a va
 
 ### Verified badge evidence
 
-I will verify the GitHub Verified badge after pushing the Lab 1 branch and opening the pull request.
+The Lab 1 commit shows the GitHub Verified badge on the pull request commit list.
 
 ---
 
@@ -81,11 +85,16 @@ A pull request template was added at:
 
     .github/pull_request_template.md
 
-The template contains sections for Goal, Changes, Testing, and Checklist.
+The template contains sections for:
+
+    Goal
+    Changes
+    Testing
+    Checklist
 
 This makes the PR easier to review because the reviewer can quickly see what changed, how it was tested, and whether the lab requirements were checked.
 
-After opening the Lab 1 pull request, I will confirm that the PR description auto-populates from this template.
+The Lab 1 pull request description auto-populated from the template and was completed before opening the PR.
 
 ---
 
@@ -111,7 +120,7 @@ Starring repositories matters because it helps developers bookmark useful projec
 - [x] QuickNotes POST endpoint tested
 - [x] SSH commit signing configured
 - [x] Pull request template added
-- [ ] Final commit signature verified
-- [ ] GitHub Verified badge checked
-- [ ] PR description auto-populated
-- [ ] GitHub community actions completed
+- [x] Final commit signature verified
+- [x] GitHub Verified badge checked
+- [x] PR description auto-populated
+- [x] GitHub community actions completed
