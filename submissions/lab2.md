@@ -186,3 +186,30 @@ After rebase, the branch history became:
 Interpretation:
 
     Rebase replayed the Lab 2 commits on top of the moved base commit. This produced new commit SHAs because rebase rewrites commits. I would choose rebase for a short-lived feature branch when I want a clean linear history before opening a PR. I would choose merge when preserving the exact branch topology matters or when working on a shared branch that other people may already depend on.
+
+---
+
+## Bonus Task — Bisect a Real Bug
+
+**Bisect setup:** branch `bisect-quickn` from `upstream/bug/bisect-me`
+
+**Git bisect log:**
+\`\`\`
+# status: waiting for both good and bad commits
+# bad: [f0c9243b7c80ebb930a1ce7048a1d65b4c2ac493] docs(app): mention go test invocation
+git bisect bad f0c9243b7c80ebb930a1ce7048a1d65b4c2ac493
+# status: waiting for good commit(s), bad commit known
+# good: [0ec87b808ae6a257a98ecea4a3c8d38a7f2c5ac7] chore(app): document versioning scheme (bisect fixture baseline)
+git bisect good 0ec87b808ae6a257a98ecea4a3c8d38a7f2c5ac7
+# bad: [f285ede8611e55ac0a7d01100891c0cc775e0709] refactor(store): simplify nextID restoration in load()
+git bisect bad f285ede8611e55ac0a7d01100891c0cc775e0709
+# good: [cb89bb9ee2ee5010b166061447eaca3ae0da2378] docs(store): comment the load() decode step
+git bisect good cb89bb9ee2ee5010b166061447eaca3ae0da2378
+# first bad commit: [f285ede8611e55ac0a7d01100891c0cc775e0709] refactor(store): simplify nextID restoration in load()
+**Offending commit:**
+
+SHA: f285ede8611e55ac0a7d01100891c0cc775e0709  
+Message: refactor(store): simplify nextID restoration in load()
+
+**Explanation:**  
+Git bisect performs a binary search across commits. At each step, it checks out the midpoint between known good and bad commits, tests/builds, and narrows the search space. This finds the first bad commit efficiently in log₂(N) steps, here identifying the commit that breaks `TestStore_PersistsAcrossReload`.
