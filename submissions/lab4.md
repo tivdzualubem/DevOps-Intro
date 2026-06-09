@@ -145,3 +145,132 @@ Decision:
 ### 1.4 502 debugging reflection
 
 If QuickNotes returned 502, I would debug outside-in. First I would check whether the service process is running, then whether it is listening on the expected port with `ss -tlnp`. Next I would test local reachability with `curl localhost:8080/health`. If the application is healthy locally, I would check the reverse proxy or load balancer path, firewall rules, and DNS resolution. This order separates application failure from transport, routing, firewall, and name-resolution problems.
+
+## Task 2 — Broken Deploy Debugging
+
+### 2.1 Broken instance reproduction
+
+I started one QuickNotes instance on port 8080:
+
+    ADDR=:8080 go run . &
+    PID1=$!
+
+Then I started a second instance on the same port:
+
+    ADDR=:8080 go run . 2>&1 | tee /tmp/qn-broken.log &
+
+The second instance failed with:
+
+    2026/06/09 23:35:11 quicknotes listening on :8080 (notes loaded: 6)
+    2026/06/09 23:35:11 listen: listen tcp :8080: bind: address already in use
+    exit status 1
+
+Root cause:
+
+    listen tcp :8080: bind: address already in use
+
+Only one process can bind to TCP port 8080 at a time. The first QuickNotes process was already listening, so the second instance failed.
+
+### 2.2 Outside-in debugging chain
+
+#### 1. Is the service/process running?
+
+Command:
+
+    ps -ef | grep quicknotes | grep -v grep || true
+    ps -ef | grep "go run" | grep -v grep || true
+
+Output:
+
+    teeroyce 9382 9319 0 23:35 pts/2 00:00:00 /home/teeroyce/.cache/go-build/.../quicknotes
+    teeroyce 9319 3091 0 23:35 pts/2 00:00:00 go run .
+
+Decision:
+
+    A QuickNotes compiled child process was running, and the `go run .` wrapper was also present.
+
+#### 2. Is the service listening?
+
+Command:
+
+    ss -tlnp | grep 8080
+
+Output:
+
+    LISTEN 0 4096 *:8080 *:* users:(("quicknotes",pid=9382,fd=3))
+
+Decision:
+
+    Port 8080 was already occupied by the first QuickNotes instance.
+
+#### 3. Is the application reachable locally?
+
+Command:
+
+    curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/health
+
+Output:
+
+    200
+
+Decision:
+
+    The existing QuickNotes instance was healthy and reachable locally.
+
+#### 4. Is the firewall blocking traffic?
+
+Command:
+
+    sudo iptables -L -n -v 2>/dev/null || sudo nft list ruleset 2>/dev/null || true
+
+Output:
+
+    No blocking firewall rule was shown in the captured output.
+
+Decision:
+
+    The failure was not caused by firewall blocking because the local health check returned HTTP 200.
+
+#### 5. Does localhost resolve?
+
+Command:
+
+    dig +short localhost
+
+Output:
+
+    127.0.0.1
+
+Decision:
+
+    Localhost name resolution works.
+
+### 2.3 Repair
+
+First I tried killing `PID1`, but this only terminated the `go run` wrapper. The compiled QuickNotes child process continued listening on port 8080:
+
+    LISTEN 0 4096 *:8080 *:* users:(("quicknotes",pid=9382,fd=3))
+
+I then killed the actual listener:
+
+    kill 9382
+
+After that, port 8080 became free:
+
+    8080 is free after killing actual listener
+
+Then I restarted QuickNotes:
+
+    ADDR=:8080 go run . &
+
+The health check passed:
+
+    {"notes":6,"status":"ok"}
+
+The repaired listener was visible:
+
+    LISTEN 0 4096 *:8080 *:* users:(("quicknotes",pid=9617,fd=3))
+
+### 2.4 Mini-postmortem
+
+The failure happened because two QuickNotes instances tried to bind to the same TCP port, `:8080`. The first instance already owned the port, so the second instance failed immediately with `bind: address already in use`. The outside-in checks showed that DNS and local reachability were working, the existing application was healthy, and the real fault was at the process/socket layer. A useful prevention is to check port ownership before deployment using `ss -tlnp | grep 8080`, stop the existing service cleanly, and prefer a process manager such as systemd so service lifecycle is explicit.
