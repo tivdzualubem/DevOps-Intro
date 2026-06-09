@@ -393,3 +393,13 @@ TLS 1.3 works and was used by curl:
 Conclusion:
 
     TLS 1.0 and TLS 1.1 are deprecated and unavailable in this environment. Caddy successfully serves modern HTTPS on localhost:8443 using TLS 1.2/1.3.
+
+### B.6 Wireshark screenshots
+
+The following Wireshark screenshots are included as bonus evidence:
+
+- `lab4-wireshark-clienthello.png` — ClientHello showing SNI `localhost`, TLS version field, and offered cipher suites.
+- `lab4-wireshark-serverhello.png` — ServerHello showing the selected TLS version and cipher suite.
+- `lab4-wireshark-certchain.png` — OpenSSL certificate chain evidence showing Caddy local CA certificates and TLSv1.3 cipher information.
+
+TLS 1.0 and TLS 1.1 are not negotiated. The working connection uses modern TLS, and the successful curl/OpenSSL evidence shows TLSv1.3 with `TLS_AES_128_GCM_SHA256`.
