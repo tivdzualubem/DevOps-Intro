@@ -274,3 +274,122 @@ The repaired listener was visible:
 ### 2.4 Mini-postmortem
 
 The failure happened because two QuickNotes instances tried to bind to the same TCP port, `:8080`. The first instance already owned the port, so the second instance failed immediately with `bind: address already in use`. The outside-in checks showed that DNS and local reachability were working, the existing application was healthy, and the real fault was at the process/socket layer. A useful prevention is to check port ownership before deployment using `ss -tlnp | grep 8080`, stop the existing service cleanly, and prefer a process manager such as systemd so service lifecycle is explicit.
+
+## Bonus — HTTPS Reverse Proxy and TLS Inspection
+
+### B.1 Caddy reverse proxy
+
+Caddy was installed using:
+
+    sudo apt install -y caddy
+
+Version:
+
+    2.6.2
+
+Caddy was configured with `/etc/caddy/Caddyfile`:
+
+    localhost:8443 {
+        reverse_proxy localhost:8080
+    }
+
+The configuration validated successfully:
+
+    Valid configuration
+
+Caddy service status showed:
+
+    Active: active (running)
+    certificate obtained successfully
+    identifier="localhost"
+
+### B.2 HTTPS request through Caddy
+
+Command:
+
+    curl -vk https://localhost:8443/health
+
+Important TLS handshake evidence:
+
+    TLSv1.3 (OUT), TLS handshake, Client hello (1)
+    TLSv1.3 (IN), TLS handshake, Server hello (2)
+    TLSv1.3 (IN), TLS handshake, Certificate (11)
+    SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / X25519 / id-ecPublicKey
+
+HTTP result:
+
+    HTTP/2 200
+    {"notes":6,"status":"ok"}
+
+### B.3 TLS packet capture
+
+TLS traffic was captured using:
+
+    sudo tcpdump -U -i lo -nn -s 0 -w lab4-tls.pcap 'tcp port 8443'
+
+Capture result:
+
+    20 packets captured
+    40 packets received by filter
+    0 packets dropped by kernel
+
+Decoded packet summary showed:
+
+    SYN
+    SYN/ACK
+    ACK
+    encrypted TLS application data
+    FIN/RST close
+
+The plaintext HTTP request is not visible in the packet capture because it is encrypted inside TLS.
+
+### B.4 Certificate chain
+
+OpenSSL initially failed without SNI, so I reran it with `-servername localhost`:
+
+    openssl s_client -connect localhost:8443 -servername localhost -showcerts
+
+The certificate chain showed:
+
+    Certificate chain
+    issuer=CN = Caddy Local Authority - ECC Intermediate
+    New, TLSv1.3, Cipher is TLS_AES_128_GCM_SHA256
+    Protocol  : TLSv1.3
+    Cipher    : TLS_AES_128_GCM_SHA256
+
+The certificate is issued by Caddy's local CA, which is expected for localhost automatic HTTPS.
+
+### B.5 TLS 1.0 and TLS 1.1 deprecation evidence
+
+TLS 1.0 test:
+
+    openssl s_client -connect localhost:8443 -servername localhost -tls1
+
+Result:
+
+    tls_setup_handshake:no protocols available
+    no peer certificate available
+    New, (NONE), Cipher is (NONE)
+
+TLS 1.1 test:
+
+    openssl s_client -connect localhost:8443 -servername localhost -tls1_1
+
+Result:
+
+    tls_setup_handshake:no protocols available
+    no peer certificate available
+    New, (NONE), Cipher is (NONE)
+
+TLS 1.2 still works:
+
+    New, TLSv1.2, Cipher is ECDHE-ECDSA-AES128-GCM-SHA256
+    Protocol  : TLSv1.2
+
+TLS 1.3 works and was used by curl:
+
+    SSL connection using TLSv1.3 / TLS_AES_128_GCM_SHA256 / X25519 / id-ecPublicKey
+
+Conclusion:
+
+    TLS 1.0 and TLS 1.1 are deprecated and unavailable in this environment. Caddy successfully serves modern HTTPS on localhost:8443 using TLS 1.2/1.3.
