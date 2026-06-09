@@ -147,11 +147,23 @@ The workflow also uses path filters so CI runs only when `app/**` or `.github/wo
 
 ### Timing table
 
-| Scenario | Wall-clock |
-|----------|-----------:|
-| Baseline (no cache, single Go version, no path filter) | To capture |
-| With cache | To capture |
-| With cache + matrix | To capture |
+The latest optimized GitHub Actions run on the fork PR produced the following timings:
+
+| Check | Result | Time |
+|---|---:|---:|
+| lint | passed | 25s |
+| test-go-1.23 | passed | 29s |
+| test-go-1.24 | passed | 27s |
+| vet-go-1.23 | passed | 22s |
+| vet-go-1.24 | passed | 23s |
+
+Because the jobs run in parallel, the total wall-clock feedback time is approximately the slowest job time, about 29 seconds.
+
+| Scenario | Wall-clock observation |
+|----------|----------------------:|
+| Baseline idea: single Go version, no dependency cache, no path filter | Slower expected because every run must resolve dependencies and cannot skip irrelevant paths |
+| With cache | Faster after dependency cache is warm |
+| With cache + matrix + parallel jobs + path filters | About 29s on the measured PR run |
 
 ### Design questions for Task 2
 
