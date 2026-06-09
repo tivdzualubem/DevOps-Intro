@@ -210,7 +210,26 @@ This confirms that the PR gate recovers after the fix and allows only passing co
 
 ## Branch Protection Evidence
 
-To be completed after requiring CI checks on the fork `main` branch.
+The fork repository has a branch protection rule for `main`.
+
+The rule requires:
+
+    Pull request before merging
+    1 approval
+    Status checks to pass before merging
+    Branches to be up to date before merging
+    Signed commits
+    Linear history
+
+The required status checks configured on the fork are:
+
+    lint
+    test-go-1.23
+    test-go-1.24
+    vet-go-1.23
+    vet-go-1.24
+
+This means a PR cannot be merged into `main` unless the CI pipeline passes and the protected branch requirements are satisfied.
 
 ## Bonus Task — Pipeline Performance Investigation
 
