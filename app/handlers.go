@@ -7,14 +7,16 @@ import (
 	"sort"
 	"strconv"
 	"sync/atomic"
+	"time"
 )
 
 type Server struct {
-	store          *Store
-	notesCreated   atomic.Uint64
-	notesDeleted   atomic.Uint64
-	requestsTotal  atomic.Uint64
-	requestsByCode map[int]*atomic.Uint64
+	store           *Store
+	notesCreated    atomic.Uint64
+	notesDeleted    atomic.Uint64
+	requestsTotal   atomic.Uint64
+	requestsByCode  map[int]*atomic.Uint64
+	requestDuration *requestDurationMetrics
 }
 
 func NewServer(store *Store) *Server {
@@ -23,7 +25,11 @@ func NewServer(store *Store) *Server {
 	for _, c := range codes {
 		by[c] = new(atomic.Uint64)
 	}
-	return &Server{store: store, requestsByCode: by}
+	return &Server{
+		store:           store,
+		requestsByCode:  by,
+		requestDuration: newRequestDurationMetrics(),
+	}
 }
 
 func (s *Server) Routes() *http.ServeMux {
@@ -49,11 +55,18 @@ func (sw *statusWriter) WriteHeader(code int) {
 
 func (s *Server) wrap(h http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		startedAt := time.Now()
 		sw := &statusWriter{ResponseWriter: w, code: 200}
+
 		h(sw, r)
+
 		s.requestsTotal.Add(1)
 		if c, ok := s.requestsByCode[sw.code]; ok {
 			c.Add(1)
+		}
+
+		if r.URL.Path != "/metrics" {
+			s.requestDuration.observe(time.Since(startedAt))
 		}
 	}
 }
@@ -90,6 +103,7 @@ func (s *Server) handleMetrics(w http.ResponseWriter, r *http.Request) {
 	for _, code := range codes {
 		_, _ = w.Write([]byte(byCodeName + `{code="` + strconv.Itoa(code) + `"} ` + strconv.FormatUint(s.requestsByCode[code].Load(), 10) + "\n"))
 	}
+	s.requestDuration.writePrometheus(w)
 }
 
 func (s *Server) handleListNotes(w http.ResponseWriter, r *http.Request) {
