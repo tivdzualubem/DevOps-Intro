@@ -1,0 +1,277 @@
+name: Lab 8 External Monitoring Window
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/lab8
+    paths:
+      - ".github/workflows/lab8-external-monitor.yml"
+      - "app/*.go"
+      - "monitoring/grafana/dashboards/golden-signals.json"
+
+permissions:
+  contents: read
+
+jobs:
+  external-monitoring:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create runtime-only Grafana credentials
+        shell: bash
+        run: |
+          echo "GRAFANA_ADMIN_USER=lab8admin" > .env
+          echo "GRAFANA_ADMIN_PASSWORD=$(openssl rand -hex 24)" >> .env
+          chmod 600 .env
+
+      - name: Start Lab 8 stack
+        shell: bash
+        run: |
+          docker compose up -d --build
+
+          for attempt in $(seq 1 120); do
+            if curl -fsS http://127.0.0.1:8080/health >/dev/null &&
+               curl -fsS http://127.0.0.1:9090/-/ready >/dev/null &&
+               curl -fsS http://127.0.0.1:3000/api/health >/dev/null; then
+              echo "QuickNotes, Prometheus, and Grafana are ready."
+              docker compose ps
+              exit 0
+            fi
+
+            echo "Waiting for the Lab 8 stack: attempt ${attempt}/120"
+            sleep 2
+          done
+
+          echo "The Compose stack did not become ready."
+          docker compose ps
+          docker compose logs --no-color
+          exit 1
+
+      - name: Create tunnel and maintain Checkly monitoring window
+        shell: bash
+        run: |
+          curl -fsSL \
+            --retry 5 \
+            --retry-delay 2 \
+            --retry-all-errors \
+            https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 \
+            -o /tmp/cloudflared
+
+          chmod +x /tmp/cloudflared
+          /tmp/cloudflared --version
+
+          /tmp/cloudflared tunnel \
+            --no-autoupdate \
+            --protocol http2 \
+            --url http://127.0.0.1:8080 \
+            > /tmp/cloudflared.log 2>&1 &
+
+          CLOUDFLARED_PID=$!
+          PUBLIC_URL=""
+
+          for attempt in $(seq 1 120); do
+            PUBLIC_URL="$(
+              grep -oE 'https://[a-z0-9-]+\.trycloudflare\.com' \
+                /tmp/cloudflared.log |
+              tail -n 1 || true
+            )"
+
+            if [ -n "$PUBLIC_URL" ]; then
+              break
+            fi
+
+            if ! kill -0 "$CLOUDFLARED_PID" 2>/dev/null; then
+              echo "Cloudflare Tunnel exited before creating a URL."
+              cat /tmp/cloudflared.log
+              exit 1
+            fi
+
+            echo "Waiting for Cloudflare URL: attempt ${attempt}/120"
+            sleep 2
+          done
+
+          if [ -z "$PUBLIC_URL" ]; then
+            echo "No public Cloudflare URL was created."
+            cat /tmp/cloudflared.log
+            exit 1
+          fi
+
+          CHECKLY_URL="${PUBLIC_URL}/health"
+
+          echo
+          echo "============================================================"
+          echo "CHECKLY_URL=${CHECKLY_URL}"
+          echo "============================================================"
+          echo
+
+          echo "::notice title=Lab 8 Checkly URL::${CHECKLY_URL}"
+
+          {
+            echo "## Lab 8 Checkly URL"
+            echo
+            echo "\`${CHECKLY_URL}\`"
+            echo
+            echo "The public tunnel is scheduled to remain active for 45 minutes."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "Waiting for DNS propagation and HTTP 200 response..."
+          HEALTH_STATUS=""
+
+          for attempt in $(seq 1 120); do
+            if ! kill -0 "$CLOUDFLARED_PID" 2>/dev/null; then
+              echo "Cloudflare Tunnel stopped during endpoint readiness checks."
+              cat /tmp/cloudflared.log
+              exit 1
+            fi
+
+            HEALTH_STATUS="$(
+              curl -sS \
+                --connect-timeout 5 \
+                --max-time 15 \
+                -o /tmp/public-health-body.txt \
+                -w '%{http_code}' \
+                "$CHECKLY_URL" 2>/dev/null || true
+            )"
+
+            if [ "$HEALTH_STATUS" = "200" ]; then
+              echo "Public endpoint is ready."
+              cat /tmp/public-health-body.txt
+              echo
+              break
+            fi
+
+            echo "Readiness attempt=${attempt}/120 status=${HEALTH_STATUS:-unresolved}"
+            sleep 5
+          done
+
+          if [ "$HEALTH_STATUS" != "200" ]; then
+            echo "The public endpoint did not become reachable."
+            cat /tmp/cloudflared.log
+            exit 1
+          fi
+
+          echo
+          echo "=== 45-MINUTE CHECKLY MONITORING WINDOW ==="
+
+          for minute in $(seq 1 45); do
+            if ! kill -0 "$CLOUDFLARED_PID" 2>/dev/null; then
+              echo "Cloudflare Tunnel stopped at minute ${minute}."
+              cat /tmp/cloudflared.log
+              exit 1
+            fi
+
+            RESULT="$(
+              curl -sS \
+                --connect-timeout 5 \
+                --max-time 15 \
+                -o /tmp/window-health-body.txt \
+                -w 'status=%{http_code} time=%{time_total}s' \
+                "$CHECKLY_URL" 2>/dev/null || true
+            )"
+
+            echo "minute=$(printf '%02d' "$minute") ${RESULT:-request_failed}"
+            sleep 60
+          done
+
+          echo
+          echo "=== FINAL 30-MINUTE PROMETHEUS COMPARISON ==="
+
+          WINDOW_END_UTC="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          WINDOW_START_UTC="$(date -u -d '30 minutes ago' '+%Y-%m-%dT%H:%M:%SZ')"
+
+          PROM_P50_MS="$(
+            curl -fsS               --get               --data-urlencode               'query=1000 * histogram_quantile(0.50, sum by (le) (rate(quicknotes_http_request_duration_seconds_bucket[30m])))'               http://127.0.0.1:9090/api/v1/query |
+            python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["data"]["result"][0]["value"][1])'
+          )"
+
+          PROM_P95_MS="$(
+            curl -fsS               --get               --data-urlencode               'query=1000 * histogram_quantile(0.95, sum by (le) (rate(quicknotes_http_request_duration_seconds_bucket[30m])))'               http://127.0.0.1:9090/api/v1/query |
+            python3 -c 'import json,sys; d=json.load(sys.stdin); print(d["data"]["result"][0]["value"][1])'
+          )"
+
+          PROM_ERRORS="$(
+            curl -fsS               --get               --data-urlencode               'query=sum(increase(quicknotes_http_responses_by_code_total{code=~"4..|5.."}[30m]))'               http://127.0.0.1:9090/api/v1/query |
+            python3 -c 'import json,sys; d=json.load(sys.stdin); r=d["data"]["result"]; print(r[0]["value"][1] if r else "0")'
+          )"
+
+          PROM_REQUESTS="$(
+            curl -fsS               --get               --data-urlencode               'query=sum(increase(quicknotes_http_requests_total[30m]))'               http://127.0.0.1:9090/api/v1/query |
+            python3 -c 'import json,sys; d=json.load(sys.stdin); r=d["data"]["result"]; print(r[0]["value"][1] if r else "0")'
+          )"
+
+          echo "window_start_utc=${WINDOW_START_UTC}"
+          echo "window_end_utc=${WINDOW_END_UTC}"
+          echo "prometheus_p50_ms=${PROM_P50_MS}"
+          echo "prometheus_p95_ms=${PROM_P95_MS}"
+          echo "prometheus_errors=${PROM_ERRORS}"
+          echo "prometheus_requests=${PROM_REQUESTS}"
+
+          {
+            echo
+            echo "## Final 30-minute Prometheus comparison"
+            echo
+            echo "| Measurement | Value |"
+            echo "|---|---:|"
+            echo "| Window start UTC | ${WINDOW_START_UTC} |"
+            echo "| Window end UTC | ${WINDOW_END_UTC} |"
+            echo "| Internal P50 latency | ${PROM_P50_MS} ms |"
+            echo "| Internal P95 latency | ${PROM_P95_MS} ms |"
+            echo "| HTTP 4xx/5xx errors | ${PROM_ERRORS} |"
+            echo "| HTTP requests | ${PROM_REQUESTS} |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo
+          echo "=== FINAL PUBLIC HEALTH CHECK ==="
+
+          FINAL_STATUS="$(
+            curl -sS \
+              --connect-timeout 5 \
+              --max-time 15 \
+              -o /tmp/final-health-body.txt \
+              -w '%{http_code}' \
+              "$CHECKLY_URL" 2>/dev/null || true
+          )"
+
+          echo "status=${FINAL_STATUS:-request_failed}"
+
+          if [ "$FINAL_STATUS" = "200" ]; then
+            cat /tmp/final-health-body.txt
+            echo
+          else
+            echo "Final public health check was not HTTP 200."
+          fi
+
+          echo
+          echo "=== PROMETHEUS QUICKNOTES TARGET ==="
+
+          curl -fsS \
+            --get \
+            --data-urlencode 'query=up{job="quicknotes"}' \
+            http://127.0.0.1:9090/api/v1/query |
+            python3 -m json.tool
+
+      - name: Show failure diagnostics
+        if: failure()
+        shell: bash
+        run: |
+          echo "=== CLOUDFLARED LOG ==="
+          cat /tmp/cloudflared.log 2>/dev/null || true
+
+          echo
+          echo "=== COMPOSE STATUS ==="
+          docker compose ps || true
+
+          echo
+          echo "=== COMPOSE LOGS ==="
+          docker compose logs --no-color || true
+
+      - name: Clean up
+        if: always()
+        shell: bash
+        run: |
+          docker compose down -v
