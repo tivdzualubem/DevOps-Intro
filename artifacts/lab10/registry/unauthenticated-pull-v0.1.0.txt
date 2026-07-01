@@ -1,0 +1,31 @@
+v0.1.0: Pulling from tivdzualubem/devops-intro/quicknotes
+875ea9878944: Already exists
+990a9c434e5e: Already exists
+39dc083afc39: Already exists
+bf7a4185f015: Already exists
+2780920e5dbf: Already exists
+7c12895b777b: Already exists
+3214acf345c0: Already exists
+52630fc75a18: Already exists
+dd64bf2dd177: Already exists
+b839dfae01f6: Already exists
+dcaa5a89b0cc: Already exists
+069d1e267530: Already exists
+b2fee34d9e73: Pulling fs layer
+90c230eddf12: Pulling fs layer
+8982df0a5a01: Pulling fs layer
+21e8b439b76a: Pulling fs layer
+21e8b439b76a: Waiting
+8982df0a5a01: Download complete
+21e8b439b76a: Verifying Checksum
+21e8b439b76a: Download complete
+b2fee34d9e73: Download complete
+90c230eddf12: Verifying Checksum
+90c230eddf12: Download complete
+b2fee34d9e73: Pull complete
+90c230eddf12: Pull complete
+8982df0a5a01: Pull complete
+21e8b439b76a: Pull complete
+Digest: sha256:51087fe7c8f2c787d8e338cf3c1c6f801aba4a6d4431a285629349fd1ed56db8
+Status: Downloaded newer image for ghcr.io/tivdzualubem/devops-intro/quicknotes:v0.1.0
+ghcr.io/tivdzualubem/devops-intro/quicknotes:v0.1.0

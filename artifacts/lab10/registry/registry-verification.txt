@@ -1,0 +1,15 @@
+image: ghcr.io/tivdzualubem/devops-intro/quicknotes
+version: v0.1.0
+version_pull_status: 0
+latest_pull_status: 0
+inspect_status: 0
+version_image_id: sha256:0ea6eca6e351804a946a0a940df674eb40bac873229822d7fad6442b0edce6a3
+latest_image_id: sha256:0ea6eca6e351804a946a0a940df674eb40bac873229822d7fad6442b0edce6a3
+same_image_status: 0
+run_status: 0
+health_status: 0
+notes_status: 0
+logs_status: 0
+cleanup_status: 0
+release_run: https://github.com/tivdzualubem/DevOps-Intro/actions/runs/28542860182
+package_visibility: public

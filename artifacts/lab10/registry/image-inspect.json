@@ -1,0 +1,142 @@
+[
+    {
+        "Id": "sha256:0ea6eca6e351804a946a0a940df674eb40bac873229822d7fad6442b0edce6a3",
+        "RepoTags": [
+            "ghcr.io/tivdzualubem/devops-intro/quicknotes:latest",
+            "ghcr.io/tivdzualubem/devops-intro/quicknotes:v0.1.0"
+        ],
+        "RepoDigests": [
+            "ghcr.io/tivdzualubem/devops-intro/quicknotes@sha256:51087fe7c8f2c787d8e338cf3c1c6f801aba4a6d4431a285629349fd1ed56db8"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-07-01T19:36:37.963286434Z",
+        "Config": {
+            "User": "65532:65532",
+            "ExposedPorts": {
+                "8080/tcp": {}
+            },
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt",
+                "ADDR=:8080",
+                "DATA_PATH=/data/notes.json",
+                "SEED_PATH=/seed.json"
+            ],
+            "Entrypoint": [
+                "/quicknotes"
+            ],
+            "WorkingDir": "/",
+            "Labels": {
+                "org.opencontainers.image.revision": "3dfb81a7fed822dda0fc5041fda662e4563e4416",
+                "org.opencontainers.image.source": "https://github.com/tivdzualubem/DevOps-Intro",
+                "org.opencontainers.image.version": "v0.1.0"
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 14054135,
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/e7c4f7de0e2bb227f7db80923fad20b13ec9dbf53ecd6af88051ac36b2f9a142/diff:/var/lib/docker/overlay2/7bb2012e2fcaa90c987fb01161e8e37d289066a8dff3c3bd8153648a0e312eb6/diff:/var/lib/docker/overlay2/62bb0228c9063fafea3b2c77fb39adedb9b3eb7351af5c9e7688e2f66b7fd260/diff:/var/lib/docker/overlay2/eac24a8e6248ccf7ac713c3d439ae0d69213ceb131fbe7b82341a0f33a143785/diff:/var/lib/docker/overlay2/1d756d518069b991f3001ce4debbc7586f7f4b3af96d35097cf404d4552e4485/diff:/var/lib/docker/overlay2/a4f172d9d70f6adf4b005df4b1aaf98e64d564823b3b8931e5c213f0f6cac559/diff:/var/lib/docker/overlay2/4113ccdb0f8468fceefd378795ac05a7901c7fa5c044890b659a0f2fbfab5a5c/diff:/var/lib/docker/overlay2/e75fe5a6a1f4d3d0d79abcd6b8db49298008f9aa2bce4d5636241f88f5fe6653/diff:/var/lib/docker/overlay2/381dc7ab28d5728ea6c474ba558a8b5fe19690d31631ad05d382f6c0f11f36fe/diff:/var/lib/docker/overlay2/b5b6a87a31f75795b4abc28161d9c57fa53de586f6e8e439fd0d94b7452dfb79/diff:/var/lib/docker/overlay2/057fafa8028f3441e27978ae78a6d62ec3a8553cb987b47a4ab315d32a1c62ab/diff:/var/lib/docker/overlay2/d24916de2a69f00f2d89a30fd10c793b9a875c53d53ea5a7be06d433b9d3b2c3/diff:/var/lib/docker/overlay2/f762a428cc21ec063c2034d0a3bf18a695953cf2080016d3d1045afd34466744/diff:/var/lib/docker/overlay2/8f21c4bac9d11e659c374dd7f01a921500b3cc95ed7d0c3a9e71c7fc0bf5c604/diff:/var/lib/docker/overlay2/452f6088700c6f792e6fa7cc761c22352fe14eccfea168cbb4b2b9b5795238fa/diff",
+                "MergedDir": "/var/lib/docker/overlay2/81f57dc143e8c50dad5ffb54da360dbd9c4a7685933966fa371325ccd63be552/merged",
+                "UpperDir": "/var/lib/docker/overlay2/81f57dc143e8c50dad5ffb54da360dbd9c4a7685933966fa371325ccd63be552/diff",
+                "WorkDir": "/var/lib/docker/overlay2/81f57dc143e8c50dad5ffb54da360dbd9c4a7685933966fa371325ccd63be552/work"
+            },
+            "Name": "overlay2"
+        },
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:9ac0db7cd6b389001b18856f7926a18dff7f834c84523445e5030fd753f09245",
+                "sha256:8fa10c0194df9b7c054c90dbe482585f768a54428fc90a5b78a0066a123b1bba",
+                "sha256:35b5ba6e08cdd034b8d1920f9c7203e5d66f258e1915f164a01de0af14f34710",
+                "sha256:114dde0fefebbca13165d0da9c500a66190e497a82a53dcaabc3172d630be1e9",
+                "sha256:4d049f83d9cf21d1f5cc0e11deaf36df02790d0e60c1a3829538fb4b61685368",
+                "sha256:af5aa97ebe6ce1604747ec1e21af7136ded391bcabe4acef882e718a87c86bcc",
+                "sha256:6f1cdceb6a3146f0ccb986521156bef8a422cdbb0863396f7f751f575ba308f4",
+                "sha256:bd3cdfae1d3fdd83a2231d608969b38b82349777c2fff9a7c12d54f8ac5c9b38",
+                "sha256:4cde6b0bb6f50a5f255eef7b2a42162c661cf776b803225dcac9a659e396bb6b",
+                "sha256:ad51d0769d16ba578106a177987dfe3d2e02c1668c852b795b2f6b024068242a",
+                "sha256:6e7fbcf090d09b73a4aa85f9dce690d0ace73877c150b7c56955487b6e7a822a",
+                "sha256:33b37ab0b0901175c2699d81c10b0c887f0dff944de74763cca00c155904d6fb",
+                "sha256:8afdf31e5983e085e6ab6a63575aab113432f593f018660d121226ec9bf86291",
+                "sha256:48c6a65c33fa2c95927e82fe3bb0b00c853fa50dc54f7634b1912cfac6cdd8bf",
+                "sha256:480299e12d57f5415610e3fda01de1e96398183444e05e96b60a765e66399ea1",
+                "sha256:ca2e8b25e8fb1108d9db59d42f7fb0fa940df77df88dc584891aee8c48bc9ccf"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "0001-01-01T00:00:00Z"
+        }
+    },
+    {
+        "Id": "sha256:0ea6eca6e351804a946a0a940df674eb40bac873229822d7fad6442b0edce6a3",
+        "RepoTags": [
+            "ghcr.io/tivdzualubem/devops-intro/quicknotes:latest",
+            "ghcr.io/tivdzualubem/devops-intro/quicknotes:v0.1.0"
+        ],
+        "RepoDigests": [
+            "ghcr.io/tivdzualubem/devops-intro/quicknotes@sha256:51087fe7c8f2c787d8e338cf3c1c6f801aba4a6d4431a285629349fd1ed56db8"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-07-01T19:36:37.963286434Z",
+        "Config": {
+            "User": "65532:65532",
+            "ExposedPorts": {
+                "8080/tcp": {}
+            },
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt",
+                "ADDR=:8080",
+                "DATA_PATH=/data/notes.json",
+                "SEED_PATH=/seed.json"
+            ],
+            "Entrypoint": [
+                "/quicknotes"
+            ],
+            "WorkingDir": "/",
+            "Labels": {
+                "org.opencontainers.image.revision": "3dfb81a7fed822dda0fc5041fda662e4563e4416",
+                "org.opencontainers.image.source": "https://github.com/tivdzualubem/DevOps-Intro",
+                "org.opencontainers.image.version": "v0.1.0"
+            }
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 14054135,
+        "GraphDriver": {
+            "Data": {
+                "LowerDir": "/var/lib/docker/overlay2/e7c4f7de0e2bb227f7db80923fad20b13ec9dbf53ecd6af88051ac36b2f9a142/diff:/var/lib/docker/overlay2/7bb2012e2fcaa90c987fb01161e8e37d289066a8dff3c3bd8153648a0e312eb6/diff:/var/lib/docker/overlay2/62bb0228c9063fafea3b2c77fb39adedb9b3eb7351af5c9e7688e2f66b7fd260/diff:/var/lib/docker/overlay2/eac24a8e6248ccf7ac713c3d439ae0d69213ceb131fbe7b82341a0f33a143785/diff:/var/lib/docker/overlay2/1d756d518069b991f3001ce4debbc7586f7f4b3af96d35097cf404d4552e4485/diff:/var/lib/docker/overlay2/a4f172d9d70f6adf4b005df4b1aaf98e64d564823b3b8931e5c213f0f6cac559/diff:/var/lib/docker/overlay2/4113ccdb0f8468fceefd378795ac05a7901c7fa5c044890b659a0f2fbfab5a5c/diff:/var/lib/docker/overlay2/e75fe5a6a1f4d3d0d79abcd6b8db49298008f9aa2bce4d5636241f88f5fe6653/diff:/var/lib/docker/overlay2/381dc7ab28d5728ea6c474ba558a8b5fe19690d31631ad05d382f6c0f11f36fe/diff:/var/lib/docker/overlay2/b5b6a87a31f75795b4abc28161d9c57fa53de586f6e8e439fd0d94b7452dfb79/diff:/var/lib/docker/overlay2/057fafa8028f3441e27978ae78a6d62ec3a8553cb987b47a4ab315d32a1c62ab/diff:/var/lib/docker/overlay2/d24916de2a69f00f2d89a30fd10c793b9a875c53d53ea5a7be06d433b9d3b2c3/diff:/var/lib/docker/overlay2/f762a428cc21ec063c2034d0a3bf18a695953cf2080016d3d1045afd34466744/diff:/var/lib/docker/overlay2/8f21c4bac9d11e659c374dd7f01a921500b3cc95ed7d0c3a9e71c7fc0bf5c604/diff:/var/lib/docker/overlay2/452f6088700c6f792e6fa7cc761c22352fe14eccfea168cbb4b2b9b5795238fa/diff",
+                "MergedDir": "/var/lib/docker/overlay2/81f57dc143e8c50dad5ffb54da360dbd9c4a7685933966fa371325ccd63be552/merged",
+                "UpperDir": "/var/lib/docker/overlay2/81f57dc143e8c50dad5ffb54da360dbd9c4a7685933966fa371325ccd63be552/diff",
+                "WorkDir": "/var/lib/docker/overlay2/81f57dc143e8c50dad5ffb54da360dbd9c4a7685933966fa371325ccd63be552/work"
+            },
+            "Name": "overlay2"
+        },
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:9ac0db7cd6b389001b18856f7926a18dff7f834c84523445e5030fd753f09245",
+                "sha256:8fa10c0194df9b7c054c90dbe482585f768a54428fc90a5b78a0066a123b1bba",
+                "sha256:35b5ba6e08cdd034b8d1920f9c7203e5d66f258e1915f164a01de0af14f34710",
+                "sha256:114dde0fefebbca13165d0da9c500a66190e497a82a53dcaabc3172d630be1e9",
+                "sha256:4d049f83d9cf21d1f5cc0e11deaf36df02790d0e60c1a3829538fb4b61685368",
+                "sha256:af5aa97ebe6ce1604747ec1e21af7136ded391bcabe4acef882e718a87c86bcc",
+                "sha256:6f1cdceb6a3146f0ccb986521156bef8a422cdbb0863396f7f751f575ba308f4",
+                "sha256:bd3cdfae1d3fdd83a2231d608969b38b82349777c2fff9a7c12d54f8ac5c9b38",
+                "sha256:4cde6b0bb6f50a5f255eef7b2a42162c661cf776b803225dcac9a659e396bb6b",
+                "sha256:ad51d0769d16ba578106a177987dfe3d2e02c1668c852b795b2f6b024068242a",
+                "sha256:6e7fbcf090d09b73a4aa85f9dce690d0ace73877c150b7c56955487b6e7a822a",
+                "sha256:33b37ab0b0901175c2699d81c10b0c887f0dff944de74763cca00c155904d6fb",
+                "sha256:8afdf31e5983e085e6ab6a63575aab113432f593f018660d121226ec9bf86291",
+                "sha256:48c6a65c33fa2c95927e82fe3bb0b00c853fa50dc54f7634b1912cfac6cdd8bf",
+                "sha256:480299e12d57f5415610e3fda01de1e96398183444e05e96b60a765e66399ea1",
+                "sha256:ca2e8b25e8fb1108d9db59d42f7fb0fa940df77df88dc584891aee8c48bc9ccf"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "0001-01-01T00:00:00Z"
+        }
+    }
+]

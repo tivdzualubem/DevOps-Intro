@@ -1,0 +1,4 @@
+latest: Pulling from tivdzualubem/devops-intro/quicknotes
+Digest: sha256:51087fe7c8f2c787d8e338cf3c1c6f801aba4a6d4431a285629349fd1ed56db8
+Status: Downloaded newer image for ghcr.io/tivdzualubem/devops-intro/quicknotes:latest
+ghcr.io/tivdzualubem/devops-intro/quicknotes:latest
