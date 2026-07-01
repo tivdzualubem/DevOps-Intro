@@ -1,7 +1,7 @@
 {
   "SchemaVersion": 2,
-  "CreatedAt": "2026-07-01T14:15:45.170873393Z",
-  "ArtifactName": "/repo",
+  "CreatedAt": "2026-07-01T15:51:46.562732606Z",
+  "ArtifactName": ".",
   "ArtifactType": "filesystem",
   "Metadata": {
     "ImageConfig": {

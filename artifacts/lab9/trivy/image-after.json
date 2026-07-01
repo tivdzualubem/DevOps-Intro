@@ -1,6 +1,6 @@
 {
   "SchemaVersion": 2,
-  "CreatedAt": "2026-07-01T14:26:08.324614483Z",
+  "CreatedAt": "2026-07-01T15:51:44.873648023Z",
   "ArtifactName": "quicknotes:lab6",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -8,7 +8,7 @@
       "Family": "debian",
       "Name": "12.14"
     },
-    "ImageID": "sha256:5018e55da2a1b527672d6fc4ca873ca57a3e1e135958c8e7225859a30e1be04f",
+    "ImageID": "sha256:425f2c41b00e896f9e9741b9c2691a2913136a3494031326a89e170ec50b552f",
     "DiffIDs": [
       "sha256:9ac0db7cd6b389001b18856f7926a18dff7f834c84523445e5030fd753f09245",
       "sha256:8fa10c0194df9b7c054c90dbe482585f768a54428fc90a5b78a0066a123b1bba",
@@ -22,9 +22,9 @@
       "sha256:ad51d0769d16ba578106a177987dfe3d2e02c1668c852b795b2f6b024068242a",
       "sha256:6e7fbcf090d09b73a4aa85f9dce690d0ace73877c150b7c56955487b6e7a822a",
       "sha256:33b37ab0b0901175c2699d81c10b0c887f0dff944de74763cca00c155904d6fb",
-      "sha256:cba5e1c33726aeea87e9cf2edbb76f82120ae3f651daea8ebaa6fdfbb169a72e",
-      "sha256:3e14d8e9183ee6177514d9112b1ad9351b027a92b6eab6f5921c5e6f61cc48e6",
-      "sha256:b5758e20b07a412aec2f3f7aaeff94394fb01ffccd98fdef653bfa75a28424a2",
+      "sha256:7c310e1215ccb87fd5246df7232d26313673cfb2efba33ef0355b9b76a903c4e",
+      "sha256:b84ae9003c9f59e7346a07fae4c5b8ef1c0cf09b4c2ff090c96d33ed51dd6ea0",
+      "sha256:03496a3bc73427beb81a3d6bdb0fe7b93f9d4b2bef226f2bc0264de2800aa4e7",
       "sha256:d723eab065ed7e94a11bfaf8eb9a3bccace2baac9575b876df4fd8164b02b850"
     ],
     "RepoTags": [
@@ -32,7 +32,7 @@
     ],
     "ImageConfig": {
       "architecture": "amd64",
-      "created": "2026-07-01T14:26:05.368613315Z",
+      "created": "2026-07-01T14:57:23.066376418Z",
       "history": [
         {
           "created": "1970-01-01T00:00:00Z",
@@ -83,51 +83,51 @@
           "created_by": "bazel build //common:cacerts_debian12_amd64"
         },
         {
-          "created": "2026-07-01T14:26:05Z",
+          "created": "2026-07-01T14:57:22Z",
           "created_by": "WORKDIR /",
           "comment": "buildkit.dockerfile.v0",
           "empty_layer": true
         },
         {
-          "created": "2026-07-01T14:26:05Z",
+          "created": "2026-07-01T14:57:22Z",
           "created_by": "COPY --chown=65532:65532 /out/quicknotes /quicknotes # buildkit",
           "comment": "buildkit.dockerfile.v0"
         },
         {
-          "created": "2026-07-01T14:26:05Z",
+          "created": "2026-07-01T14:57:22Z",
           "created_by": "COPY --chown=65532:65532 /out/healthcheck /healthcheck # buildkit",
           "comment": "buildkit.dockerfile.v0"
         },
         {
-          "created": "2026-07-01T14:26:05Z",
+          "created": "2026-07-01T14:57:22Z",
           "created_by": "COPY --chown=65532:65532 /out/data /data # buildkit",
           "comment": "buildkit.dockerfile.v0"
         },
         {
-          "created": "2026-07-01T14:26:05Z",
+          "created": "2026-07-01T14:57:23Z",
           "created_by": "COPY --chown=65532:65532 seed.json /seed.json # buildkit",
           "comment": "buildkit.dockerfile.v0"
         },
         {
-          "created": "2026-07-01T14:26:05Z",
+          "created": "2026-07-01T14:57:23Z",
           "created_by": "ENV ADDR=:8080 DATA_PATH=/data/notes.json SEED_PATH=/seed.json",
           "comment": "buildkit.dockerfile.v0",
           "empty_layer": true
         },
         {
-          "created": "2026-07-01T14:26:05Z",
+          "created": "2026-07-01T14:57:23Z",
           "created_by": "EXPOSE map[8080/tcp:{}]",
           "comment": "buildkit.dockerfile.v0",
           "empty_layer": true
         },
         {
-          "created": "2026-07-01T14:26:05Z",
+          "created": "2026-07-01T14:57:23Z",
           "created_by": "USER 65532:65532",
           "comment": "buildkit.dockerfile.v0",
           "empty_layer": true
         },
         {
-          "created": "2026-07-01T14:26:05Z",
+          "created": "2026-07-01T14:57:23Z",
           "created_by": "ENTRYPOINT [\"/quicknotes\"]",
           "comment": "buildkit.dockerfile.v0",
           "empty_layer": true
@@ -149,9 +149,9 @@
           "sha256:ad51d0769d16ba578106a177987dfe3d2e02c1668c852b795b2f6b024068242a",
           "sha256:6e7fbcf090d09b73a4aa85f9dce690d0ace73877c150b7c56955487b6e7a822a",
           "sha256:33b37ab0b0901175c2699d81c10b0c887f0dff944de74763cca00c155904d6fb",
-          "sha256:cba5e1c33726aeea87e9cf2edbb76f82120ae3f651daea8ebaa6fdfbb169a72e",
-          "sha256:3e14d8e9183ee6177514d9112b1ad9351b027a92b6eab6f5921c5e6f61cc48e6",
-          "sha256:b5758e20b07a412aec2f3f7aaeff94394fb01ffccd98fdef653bfa75a28424a2",
+          "sha256:7c310e1215ccb87fd5246df7232d26313673cfb2efba33ef0355b9b76a903c4e",
+          "sha256:b84ae9003c9f59e7346a07fae4c5b8ef1c0cf09b4c2ff090c96d33ed51dd6ea0",
+          "sha256:03496a3bc73427beb81a3d6bdb0fe7b93f9d4b2bef226f2bc0264de2800aa4e7",
           "sha256:d723eab065ed7e94a11bfaf8eb9a3bccace2baac9575b876df4fd8164b02b850"
         ]
       },

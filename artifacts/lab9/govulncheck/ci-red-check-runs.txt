@@ -1,0 +1,11 @@
+RED CI CHECK EVIDENCE
+========================================
+Commit: 332bec4b61fa457fe9be771378b2bc7238c8aa3c
+Fork PR: https://github.com/tivdzualubem/DevOps-Intro/pull/9
+
+govulncheck-go-1.24 | status=completed | conclusion=failure | url=https://github.com/tivdzualubem/DevOps-Intro/actions/runs/28529310985/job/84574247121
+lint | status=completed | conclusion=success | url=https://github.com/tivdzualubem/DevOps-Intro/actions/runs/28529310985/job/84574247235
+test-go-1.23 | status=completed | conclusion=success | url=https://github.com/tivdzualubem/DevOps-Intro/actions/runs/28529310985/job/84574247138
+test-go-1.24 | status=completed | conclusion=success | url=https://github.com/tivdzualubem/DevOps-Intro/actions/runs/28529310985/job/84574247167
+vet-go-1.23 | status=completed | conclusion=success | url=https://github.com/tivdzualubem/DevOps-Intro/actions/runs/28529310985/job/84574247108
+vet-go-1.24 | status=completed | conclusion=success | url=https://github.com/tivdzualubem/DevOps-Intro/actions/runs/28529310985/job/84574247258
